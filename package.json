@@ -1,0 +1,38 @@
+{
+  "name": "ai-mock-interview-website",
+  "version": "1.0.0",
+  "description": "An AI-powered mock interview platform for practicing interview skills",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'No build process needed for static site'",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "ai",
+    "interview",
+    "mock",
+    "practice",
+    "recording",
+    "feedback",
+    "javascript",
+    "html",
+    "css"
+  ],
+  "author": "AI Mock Interview Platform",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/ai-mock-interview-website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/ai-mock-interview-website/issues"
+  },
+  "homepage": "https://github.com/your-username/ai-mock-interview-website#readme"
+}

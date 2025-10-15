@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mock Interview Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <h1>AI Interview Coach</h1>
+            </div>
+            <div class="user-info">
+                <span class="session-timer" id="sessionTimer">00:00</span>
+                <button class="btn-secondary" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Welcome Screen -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-content">
+                    <div class="welcome-icon">
+                        <i class="fas fa-microphone-alt"></i>
+                    </div>
+                    <h2>Welcome to AI Interview Coach</h2>
+                    <p>Practice your interview skills with our AI-powered mock interview platform. Get real-time feedback and improve your performance.</p>
+                    
+                    <div class="interview-options">
+                        <div class="option-card">
+                            <i class="fas fa-code"></i>
+                            <h3>Technical Interview</h3>
+                            <p>Practice coding and technical questions</p>
+                            <button class="btn-primary" onclick="startInterview('technical')">Start Technical</button>
+                        </div>
+                        <div class="option-card">
+                            <i class="fas fa-briefcase"></i>
+                            <h3>Behavioral Interview</h3>
+                            <p>Practice behavioral and situational questions</p>
+                            <button class="btn-primary" onclick="startInterview('behavioral')">Start Behavioral</button>
+                        </div>
+                        <div class="option-card">
+                            <i class="fas fa-users"></i>
+                            <h3>General Interview</h3>
+                            <p>Mixed questions for comprehensive practice</p>
+                            <button class="btn-primary" onclick="startInterview('general')">Start General</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interview Screen -->
+            <div class="interview-screen" id="interviewScreen" style="display: none;">
+                <div class="interview-header">
+                    <div class="progress-info">
+                        <span class="question-counter">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span></span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    <div class="interview-controls">
+                        <button class="btn-secondary" id="pauseBtn">
+                            <i class="fas fa-pause"></i> Pause
+                        </button>
+                        <button class="btn-danger" id="endBtn">
+                            <i class="fas fa-stop"></i> End Interview
+                        </button>
+                    </div>
+                </div>
+
+                <div class="interview-content">
+                    <div class="question-section">
+                        <div class="question-card">
+                            <h3 id="questionText">Loading question...</h3>
+                            <div class="question-timer">
+                                <i class="fas fa-clock"></i>
+                                <span id="questionTimer">02:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="recording-area">
+                            <div class="recording-indicator" id="recordingIndicator">
+                                <div class="pulse-ring"></div>
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <div class="recording-controls">
+                                <button class="btn-record" id="recordBtn">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>Start Recording</span>
+                                </button>
+                                <button class="btn-stop" id="stopBtn" style="display: none;">
+                                    <i class="fas fa-stop"></i>
+                                    <span>Stop Recording</span>
+                                </button>
+                            </div>
+                            <div class="recording-status" id="recordingStatus">
+                                <span>Click to start recording your answer</span>
+                            </div>
+                        </div>
+
+                        <div class="audio-visualizer" id="audioVisualizer">
+                            <canvas id="visualizerCanvas" width="300" height="50"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="feedback-section" id="feedbackSection" style="display: none;">
+                        <div class="feedback-card">
+                            <h4>AI Feedback</h4>
+                            <div class="feedback-content" id="feedbackContent">
+                                <div class="feedback-score">
+                                    <span class="score-label">Overall Score:</span>
+                                    <span class="score-value" id="overallScore">0/100</span>
+                                </div>
+                                <div class="feedback-details" id="feedbackDetails">
+                                    <!-- Dynamic feedback content -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="navigation-section">
+                        <button class="btn-secondary" id="skipBtn">Skip Question</button>
+                        <button class="btn-primary" id="nextBtn" style="display: none;">Next Question</button>
+                        <button class="btn-primary" id="finishBtn" style="display: none;">Finish Interview</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div class="results-screen" id="resultsScreen" style="display: none;">
+                <div class="results-content">
+                    <div class="results-header">
+                        <i class="fas fa-trophy"></i>
+                        <h2>Interview Complete!</h2>
+                        <p>Here's your performance summary</p>
+                    </div>
+
+                    <div class="results-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="finalScore">0</span>
+                                <span class="stat-label">Overall Score</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="totalTime">0:00</span>
+                                <span class="stat-label">Total Time</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="questionsAnswered">0</span>
+                                <span class="stat-label">Questions Answered</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detailed-feedback">
+                        <h3>Detailed Feedback</h3>
+                        <div class="feedback-categories" id="feedbackCategories">
+                            <!-- Dynamic feedback categories -->
+                        </div>
+                    </div>
+
+                    <div class="results-actions">
+                        <button class="btn-primary" onclick="restartInterview()">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                        <button class="btn-secondary" onclick="downloadReport()">
+                            <i class="fas fa-download"></i> Download Report
+                        </button>
+                        <button class="btn-secondary" onclick="goHome()">
+                            <i class="fas fa-home"></i> Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Settings</h3>
+                    <button class="close-btn" id="closeSettings">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label for="questionCount">Number of Questions:</label>
+                        <select id="questionCount">
+                            <option value="5">5 Questions</option>
+                            <option value="10" selected>10 Questions</option>
+                            <option value="15">15 Questions</option>
+                            <option value="20">20 Questions</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="questionTime">Time per Question:</label>
+                        <select id="questionTime">
+                            <option value="60">1 minute</option>
+                            <option value="120" selected>2 minutes</option>
+                            <option value="180">3 minutes</option>
+                            <option value="300">5 minutes</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="difficulty">Difficulty Level:</label>
+                        <select id="difficulty">
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="saveSettings">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

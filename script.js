@@ -14,6 +14,9 @@ class MockInterviewApp {
         this.questions = [];
         this.responses = [];
         this.scores = [];
+        this.currentUser = null;
+        this.currentSessionId = null;
+        this.authToken = null;
         
         this.initializeApp();
     }
@@ -21,10 +24,43 @@ class MockInterviewApp {
     initializeApp() {
         this.setupEventListeners();
         this.loadQuestions();
-        this.showWelcomeScreen();
+        this.checkAuthStatus();
     }
 
     setupEventListeners() {
+        // Auth event listeners
+        document.getElementById('loginTab').addEventListener('click', () => {
+            this.switchAuthTab('login');
+        });
+
+        document.getElementById('registerTab').addEventListener('click', () => {
+            this.switchAuthTab('register');
+        });
+
+        document.getElementById('switchToRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            this.switchAuthTab('register');
+        });
+
+        document.getElementById('switchToLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            this.switchAuthTab('login');
+        });
+
+        document.getElementById('loginFormElement').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleLogin();
+        });
+
+        document.getElementById('registerFormElement').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleRegister();
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            this.handleLogout();
+        });
+
         // Settings modal
         document.getElementById('settingsBtn').addEventListener('click', () => {
             this.showSettingsModal();
@@ -66,6 +102,197 @@ class MockInterviewApp {
         document.getElementById('finishBtn').addEventListener('click', () => {
             this.finishInterview();
         });
+    }
+
+    // Authentication Methods
+    async checkAuthStatus() {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    this.currentUser = data.user;
+                    this.authToken = token;
+                    this.showWelcomeScreen();
+                    this.updateUserInterface();
+                } else {
+                    localStorage.removeItem('authToken');
+                    this.showAuthScreen();
+                }
+            } catch (error) {
+                console.error('Auth verification failed:', error);
+                localStorage.removeItem('authToken');
+                this.showAuthScreen();
+            }
+        } else {
+            this.showAuthScreen();
+        }
+    }
+
+    switchAuthTab(tab) {
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        if (tab === 'login') {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+        } else {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.style.display = 'block';
+            loginForm.style.display = 'none';
+        }
+    }
+
+    async handleLogin() {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.currentUser = data.user;
+                this.authToken = data.token;
+                localStorage.setItem('authToken', data.token);
+                this.showWelcomeScreen();
+                this.updateUserInterface();
+                this.showNotification('Login successful!', 'success');
+            } else {
+                this.showNotification(data.message || 'Login failed', 'error');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showNotification('Login failed. Please try again.', 'error');
+        }
+    }
+
+    async handleRegister() {
+        const formData = {
+            firstName: document.getElementById('registerFirstName').value,
+            lastName: document.getElementById('registerLastName').value,
+            username: document.getElementById('registerUsername').value,
+            email: document.getElementById('registerEmail').value,
+            password: document.getElementById('registerPassword').value
+        };
+
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.currentUser = data.user;
+                this.authToken = data.token;
+                localStorage.setItem('authToken', data.token);
+                this.showWelcomeScreen();
+                this.updateUserInterface();
+                this.showNotification('Registration successful!', 'success');
+            } else {
+                this.showNotification(data.message || 'Registration failed', 'error');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            this.showNotification('Registration failed. Please try again.', 'error');
+        }
+    }
+
+    handleLogout() {
+        localStorage.removeItem('authToken');
+        this.currentUser = null;
+        this.authToken = null;
+        this.showAuthScreen();
+        this.showNotification('Logged out successfully', 'success');
+    }
+
+    updateUserInterface() {
+        if (this.currentUser) {
+            document.getElementById('userName').textContent = `Welcome, ${this.currentUser.firstName}`;
+            document.getElementById('userProfile').style.display = 'flex';
+        } else {
+            document.getElementById('userProfile').style.display = 'none';
+        }
+    }
+
+    showAuthScreen() {
+        document.getElementById('authScreen').style.display = 'flex';
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('interviewScreen').style.display = 'none';
+        document.getElementById('resultsScreen').style.display = 'none';
+    }
+
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        
+        // Style the notification
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            max-width: 300px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        `;
+
+        // Set background color based on type
+        switch (type) {
+            case 'success':
+                notification.style.background = 'linear-gradient(135deg, #4ecdc4, #44a08d)';
+                break;
+            case 'error':
+                notification.style.background = 'linear-gradient(135deg, #ff6b6b, #ee5a52)';
+                break;
+            default:
+                notification.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+        }
+
+        document.body.appendChild(notification);
+
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
     }
 
     loadQuestions() {
@@ -280,12 +507,36 @@ class MockInterviewApp {
         document.getElementById('resultsScreen').style.display = 'block';
     }
 
-    startInterview(type) {
+    async startInterview(type) {
         this.interviewType = type;
         this.currentQuestionIndex = 0;
         this.responses = [];
         this.scores = [];
         this.loadQuestions();
+        
+        // Create interview session in backend
+        try {
+            const response = await fetch('/api/interview/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.authToken}`
+                },
+                body: JSON.stringify({
+                    interviewType: type,
+                    questions: this.questions
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.currentSessionId = data.sessionId;
+            } else {
+                console.error('Failed to create interview session');
+            }
+        } catch (error) {
+            console.error('Error creating interview session:', error);
+        }
         
         document.getElementById('totalQuestions').textContent = this.totalQuestions;
         this.updateProgress();
@@ -426,19 +677,37 @@ class MockInterviewApp {
         // Simulate AI processing
         const processingTime = Math.random() * 2000 + 1000; // 1-3 seconds
         
-        setTimeout(() => {
+        setTimeout(async () => {
             const score = this.generateAIScore();
             const feedback = this.generateAIFeedback(score);
             
-            this.responses.push({
+            const responseData = {
                 question: this.questions[this.currentQuestionIndex].question,
-                audioBlob: audioBlob,
+                audioBlob: await this.blobToBase64(audioBlob),
                 score: score,
                 feedback: feedback,
                 timestamp: new Date()
-            });
+            };
             
+            this.responses.push(responseData);
             this.scores.push(score);
+            
+            // Save response to backend
+            if (this.currentSessionId) {
+                try {
+                    await fetch(`/api/interview/${this.currentSessionId}/response`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.authToken}`
+                        },
+                        body: JSON.stringify(responseData)
+                    });
+                } catch (error) {
+                    console.error('Error saving response:', error);
+                }
+            }
+            
             this.showFeedback(feedback, score);
             
             // Show next/finish button
@@ -448,6 +717,15 @@ class MockInterviewApp {
                 document.getElementById('finishBtn').style.display = 'inline-flex';
             }
         }, processingTime);
+    }
+
+    blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
     }
 
     generateAIScore() {
@@ -501,12 +779,30 @@ class MockInterviewApp {
         document.getElementById('feedbackDetails').textContent = feedback;
     }
 
-    skipQuestion() {
-        this.responses.push({
+    async skipQuestion() {
+        const responseData = {
             question: this.questions[this.currentQuestionIndex].question,
             skipped: true,
             timestamp: new Date()
-        });
+        };
+        
+        this.responses.push(responseData);
+        
+        // Save skipped response to backend
+        if (this.currentSessionId) {
+            try {
+                await fetch(`/api/interview/${this.currentSessionId}/response`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.authToken}`
+                    },
+                    body: JSON.stringify(responseData)
+                });
+            } catch (error) {
+                console.error('Error saving skipped response:', error);
+            }
+        }
         
         this.nextQuestion();
     }
@@ -523,9 +819,40 @@ class MockInterviewApp {
         }
     }
 
-    finishInterview() {
+    async finishInterview() {
         clearInterval(this.questionTimer);
         clearInterval(this.sessionTimer);
+        
+        // Save completed interview to backend
+        if (this.currentSessionId) {
+            try {
+                const totalScore = this.scores.length > 0 
+                    ? Math.round(this.scores.reduce((a, b) => a + b, 0) / this.scores.length)
+                    : 0;
+                
+                const totalTime = this.sessionStartTime 
+                    ? Math.floor((Date.now() - this.sessionStartTime) / 1000)
+                    : 0;
+                
+                const questionsAnswered = this.responses.filter(r => !r.skipped).length;
+
+                await fetch(`/api/interview/${this.currentSessionId}/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.authToken}`
+                    },
+                    body: JSON.stringify({
+                        totalScore,
+                        totalTime,
+                        questionsAnswered
+                    })
+                });
+            } catch (error) {
+                console.error('Error completing interview session:', error);
+            }
+        }
+        
         this.showResults();
     }
 

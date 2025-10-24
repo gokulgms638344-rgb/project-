@@ -1,173 +1,165 @@
 # AI Mock Interview Platform
 
-A modern, interactive AI-powered mock interview website that helps users practice their interview skills with real-time feedback and scoring.
+A full-stack web application for practicing interview skills with AI-powered feedback, built with Node.js, Express, MongoDB, and vanilla JavaScript.
 
 ## Features
 
-### 🎯 **Interview Types**
-- **Technical Interviews** - Coding and technical questions
-- **Behavioral Interviews** - Situational and behavioral questions  
-- **General Interviews** - Mixed questions for comprehensive practice
+- **User Authentication**: Secure login and registration system
+- **Multiple Interview Types**: Technical, Behavioral, and General interviews
+- **Audio Recording**: Record your answers with real-time visualization
+- **AI Feedback**: Get instant feedback and scoring on your responses
+- **Session Management**: Save and track your interview progress
+- **Responsive Design**: Works on desktop and mobile devices
+- **MongoDB Integration**: Persistent data storage for users and sessions
 
-### 🎤 **Audio Recording**
-- Real-time audio recording with visual feedback
-- Audio visualization during recording
-- Automatic processing and analysis
+## Tech Stack
 
-### 🤖 **AI-Powered Feedback**
-- Real-time scoring system (0-100 scale)
-- Detailed feedback on responses
-- Keyword analysis and suggestions
-- Category-based performance tracking
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB with Mongoose
+- **Authentication**: JWT (JSON Web Tokens)
+- **Password Hashing**: bcryptjs
 
-### ⚙️ **Customizable Settings**
-- Adjustable number of questions (5-20)
-- Configurable time per question (1-5 minutes)
-- Difficulty levels (Easy, Medium, Hard)
-- Session management and progress tracking
+## Prerequisites
 
-### 📊 **Comprehensive Results**
-- Overall performance score
-- Category-wise breakdown
-- Detailed feedback report
-- Downloadable interview report
+- Node.js (v14 or higher)
+- MongoDB (local installation or MongoDB Atlas)
+- npm or yarn package manager
 
-## Getting Started
+## Installation
 
-### Prerequisites
-- Modern web browser (Chrome, Firefox, Safari, Edge)
-- Microphone access for audio recording
-- Python 3.x (for local development server)
-
-### Installation
-
-1. **Clone or download the repository**
+1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd ai-mock-interview-website
+   cd ai-mock-interview-platform
    ```
 
-2. **Start the local development server**
+2. **Install dependencies**
    ```bash
-   # Using Python 3
-   python3 -m http.server 8000
+   npm install
+   ```
+
+3. **Set up environment variables**
+   Create a `.env` file in the root directory:
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/ai-interview-platform
+   JWT_SECRET=your-super-secret-jwt-key-change-in-production
+   PORT=3000
+   ```
+
+4. **Start MongoDB**
+   Make sure MongoDB is running on your system:
+   ```bash
+   # For local MongoDB
+   mongod
    
-   # Or using Node.js (if you have it installed)
+   # Or use MongoDB Atlas (cloud)
+   # Update MONGODB_URI in .env with your Atlas connection string
+   ```
+
+5. **Start the application**
+   ```bash
+   # Development mode with auto-restart
+   npm run dev
+   
+   # Or production mode
    npm start
    ```
 
-3. **Open your browser**
-   Navigate to `http://localhost:8000`
-
-### Alternative: Direct File Access
-You can also open `index.html` directly in your browser, but some features may be limited due to browser security restrictions.
+6. **Access the application**
+   Open your browser and navigate to `http://localhost:3000`
 
 ## Usage
 
-### Starting an Interview
-1. Choose your interview type (Technical, Behavioral, or General)
-2. Configure settings if needed (number of questions, time per question, difficulty)
-3. Click "Start Interview" to begin
+1. **Register/Login**: Create a new account or sign in with existing credentials
+2. **Choose Interview Type**: Select from Technical, Behavioral, or General interviews
+3. **Configure Settings**: Adjust number of questions, time per question, and difficulty
+4. **Start Interview**: Begin recording your answers to interview questions
+5. **Get Feedback**: Receive AI-powered feedback and scoring after each response
+6. **View Results**: See your overall performance and detailed feedback
+7. **Track Progress**: Your interview sessions are saved and can be reviewed later
 
-### During the Interview
-1. Read the question carefully
-2. Click "Start Recording" to begin your response
-3. Speak your answer clearly
-4. Click "Stop Recording" when finished
-5. Review AI feedback and score
-6. Click "Next Question" to continue
+## API Endpoints
 
-### Reviewing Results
-- View your overall performance score
-- Check category-wise breakdown
-- Read detailed feedback
-- Download a comprehensive report
+### Authentication
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/verify` - Verify JWT token
 
-## Technical Features
+### Interview Sessions
+- `POST /api/interview/start` - Start a new interview session
+- `POST /api/interview/:sessionId/response` - Save interview response
+- `POST /api/interview/:sessionId/complete` - Complete interview session
+- `GET /api/interview/history` - Get user's interview history
+- `GET /api/interview/:sessionId` - Get specific interview session
 
-### Frontend Technologies
-- **HTML5** - Semantic markup and structure
-- **CSS3** - Modern styling with gradients, animations, and responsive design
-- **JavaScript (ES6+)** - Interactive functionality and audio processing
-- **Web APIs** - MediaRecorder API for audio recording
+## Project Structure
 
-### Browser Compatibility
-- Chrome 47+
-- Firefox 25+
-- Safari 14+
-- Edge 79+
+```
+├── server.js              # Express server and API routes
+├── package.json           # Dependencies and scripts
+├── .env                   # Environment variables
+├── index.html             # Main HTML file
+├── styles.css             # CSS styles
+├── script.js              # Frontend JavaScript
+└── README.md              # This file
+```
+
+## Features in Detail
+
+### Authentication System
+- Secure user registration and login
+- JWT-based authentication
+- Password hashing with bcryptjs
+- Session management
+
+### Interview Types
+- **Technical**: Programming and technical questions
+- **Behavioral**: Situational and behavioral questions
+- **General**: Mixed interview questions
 
 ### Audio Recording
-- Uses Web Audio API and MediaRecorder API
+- Browser-based audio recording
 - Real-time audio visualization
-- Automatic audio processing and analysis
+- Base64 encoding for storage
 
-## File Structure
+### AI Feedback System
+- Simulated AI scoring (0-100)
+- Keyword-based feedback
+- Category-specific analysis
+- Improvement suggestions
 
+### Data Persistence
+- User profiles and authentication
+- Interview session storage
+- Response tracking and history
+- Performance analytics
+
+## Development
+
+### Running in Development Mode
+```bash
+npm run dev
 ```
-ai-mock-interview-website/
-├── index.html          # Main HTML file
-├── styles.css          # CSS styles and responsive design
-├── script.js           # JavaScript functionality
-├── package.json        # Project configuration
-└── README.md          # Project documentation
-```
+This uses nodemon for automatic server restarts on file changes.
 
-## Customization
+### Environment Variables
+- `MONGODB_URI`: MongoDB connection string
+- `JWT_SECRET`: Secret key for JWT token signing
+- `PORT`: Server port (default: 3000)
 
-### Adding New Questions
-Edit the `questionDatabase` object in `script.js` to add new questions:
+## Deployment
 
-```javascript
-const questionDatabase = {
-    technical: [
-        {
-            question: "Your new question here",
-            category: "Category Name",
-            difficulty: "easy|medium|hard",
-            expectedKeywords: ["keyword1", "keyword2", "keyword3"]
-        }
-    ]
-};
-```
+1. **Prepare for production**:
+   - Update JWT_SECRET to a secure random string
+   - Set up MongoDB Atlas or production MongoDB instance
+   - Configure environment variables
 
-### Modifying AI Feedback
-Update the `generateAIFeedback()` method in `script.js` to customize feedback logic.
-
-### Styling Changes
-Modify `styles.css` to change colors, fonts, layouts, or animations.
-
-## Browser Requirements
-
-### Required Features
-- **MediaRecorder API** - For audio recording
-- **Web Audio API** - For audio visualization
-- **ES6+ Support** - For modern JavaScript features
-- **CSS Grid/Flexbox** - For responsive layout
-
-### Recommended Browsers
-- **Chrome 60+** - Full feature support
-- **Firefox 55+** - Full feature support
-- **Safari 14+** - Full feature support
-- **Edge 79+** - Full feature support
-
-## Troubleshooting
-
-### Audio Recording Issues
-- Ensure microphone permissions are granted
-- Check browser compatibility
-- Try refreshing the page
-- Use HTTPS in production environments
-
-### Performance Issues
-- Close unnecessary browser tabs
-- Ensure stable internet connection
-- Check browser console for errors
-
-### Mobile Compatibility
-- Audio recording works on mobile browsers
-- Touch-friendly interface
-- Responsive design for all screen sizes
+2. **Deploy to your preferred platform**:
+   - Heroku
+   - DigitalOcean
+   - AWS
+   - Google Cloud Platform
 
 ## Contributing
 
@@ -179,22 +171,8 @@ Modify `styles.css` to change colors, fonts, layouts, or animations.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Font Awesome for icons
-- Google Fonts for typography
-- Modern web APIs for audio functionality
-- Community feedback and suggestions
+This project is licensed under the MIT License.
 
 ## Support
 
-For issues, questions, or feature requests, please:
-1. Check the troubleshooting section
-2. Search existing issues
-3. Create a new issue with detailed information
-
----
-
-**Happy Interviewing! 🎤✨**
+For support or questions, please open an issue in the repository.

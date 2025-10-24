@@ -1,13 +1,13 @@
 {
-  "name": "ai-mock-interview-website",
+  "name": "ai-mock-interview-platform",
   "version": "1.0.0",
-  "description": "An AI-powered mock interview platform for practicing interview skills",
-  "main": "index.html",
+  "description": "An AI-powered mock interview platform with MongoDB backend and user authentication",
+  "main": "server.js",
   "scripts": {
-    "start": "python3 -m http.server 8000",
-    "dev": "python3 -m http.server 8000",
-    "build": "echo 'No build process needed for static site'",
-    "serve": "python3 -m http.server 8000"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo 'No build process needed'",
+    "serve": "node server.js"
   },
   "keywords": [
     "ai",
@@ -18,21 +18,35 @@
     "feedback",
     "javascript",
     "html",
-    "css"
+    "css",
+    "mongodb",
+    "express",
+    "authentication"
   ],
   "author": "AI Mock Interview Platform",
   "license": "MIT",
-  "devDependencies": {},
-  "dependencies": {},
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "multer": "^2.0.0-rc.4",
+    "express-validator": "^7.0.1"
+  },
   "engines": {
     "node": ">=14.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/ai-mock-interview-website.git"
+    "url": "https://github.com/your-username/ai-mock-interview-platform.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/ai-mock-interview-website/issues"
+    "url": "https://github.com/your-username/ai-mock-interview-platform/issues"
   },
-  "homepage": "https://github.com/your-username/ai-mock-interview-website#readme"
+  "homepage": "https://github.com/your-username/ai-mock-interview-platform#readme"
 }

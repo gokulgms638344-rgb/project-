@@ -7,7 +7,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 9999;
 const DEMO_MODE = !process.env.MONGODB_URI || process.env.MONGODB_URI.includes('localhost');
 
 // Middleware
@@ -442,4 +442,6 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`MongoDB connected: ${mongoose.connection.readyState === 1 ? 'Yes' : 'No'}`);
+  console.log(`Demo mode: ${DEMO_MODE ? 'Yes' : 'No'}`);
+  console.log(`Access the application at: http://localhost:${PORT}`);
 });
